@@ -1,0 +1,8 @@
+__pycache__/
+.venv/
+data/
+runs/
+results/*.jsonl
+results/*_base*.jsonl
+results/*.safetensors
+*.py[cod]
