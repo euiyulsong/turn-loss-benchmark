@@ -1,0 +1,26 @@
+{
+  "multi_gold": {
+    "left_minus_right_f1": -0.0011308770324115597,
+    "cluster_bootstrap_ci95": [
+      -0.020492325628099283,
+      0.016518481459338232
+    ],
+    "n_passages": 100
+  },
+  "multi_rollout": {
+    "left_minus_right_f1": 0.01444994765583001,
+    "cluster_bootstrap_ci95": [
+      -0.008138588263588261,
+      0.036070384163766504
+    ],
+    "n_passages": 100
+  },
+  "single": {
+    "left_minus_right_f1": -0.006132691926809574,
+    "cluster_bootstrap_ci95": [
+      -0.026470287419552117,
+      0.014176439464674746
+    ],
+    "n_passages": 100
+  }
+}

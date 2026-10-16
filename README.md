@@ -69,3 +69,8 @@ EM/word-overlap F1, deterministic greedy generation, base checkpoint 포함. CoQ
 실행 시 `EPOCHS=1`로 epoch 수를 지정할 수 있습니다. per-device batch size는 1입니다.
 
 로컬 검증: Python compile, bash syntax, offline construction/masking/metric smoke tests. GPU 학습/평가 결과는 완료된 출력 파일이 있을 때만 보고합니다.
+
+
+## CoQA follow-up experiment
+
+The completed CoQA follow-up results, paired confidence intervals, and interpretation are in [COQA_REPORT.md](COQA_REPORT.md). It uses three consecutive human QA turns per story and compares flattened single-turn history against separate conversational turns.
