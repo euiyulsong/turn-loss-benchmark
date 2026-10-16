@@ -1,0 +1,146 @@
+[
+  {
+    "reference": "squad__single__assistant_only__seed42",
+    "alternative": "squad__single__all_loss__seed42",
+    "evaluation": "squad/single",
+    "delta_em": -0.08999999999999997,
+    "ci95_cluster_bootstrap": [
+      -0.17,
+      -0.02
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__single__assistant_only__seed42",
+    "alternative": "squad__single__all_loss__seed42",
+    "evaluation": "squad/multi_gold_history",
+    "delta_em": -0.09999999999999998,
+    "ci95_cluster_bootstrap": [
+      -0.19,
+      -0.01
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__single__assistant_only__seed42",
+    "alternative": "squad__single__all_loss__seed42",
+    "evaluation": "squad/multi_rollout",
+    "delta_em": -0.12,
+    "ci95_cluster_bootstrap": [
+      -0.2,
+      -0.04
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__single__assistant_only__seed42",
+    "alternative": "squad__single__all_loss__seed42",
+    "evaluation": "adv/single",
+    "delta_em": 0.0,
+    "ci95_cluster_bootstrap": [
+      -0.07,
+      0.08
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__single__assistant_only__seed42",
+    "alternative": "squad__single__all_loss__seed42",
+    "evaluation": "adv/multi_gold_history",
+    "delta_em": 0.0,
+    "ci95_cluster_bootstrap": [
+      -0.08,
+      0.08
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__single__assistant_only__seed42",
+    "alternative": "squad__single__all_loss__seed42",
+    "evaluation": "adv/multi_rollout",
+    "delta_em": -0.04999999999999999,
+    "ci95_cluster_bootstrap": [
+      -0.12,
+      0.02
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__multi__assistant_only__seed42",
+    "alternative": "squad__multi__all_loss__seed42",
+    "evaluation": "squad/single",
+    "delta_em": -0.13,
+    "ci95_cluster_bootstrap": [
+      -0.21,
+      -0.06
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__multi__assistant_only__seed42",
+    "alternative": "squad__multi__all_loss__seed42",
+    "evaluation": "squad/multi_gold_history",
+    "delta_em": -0.029999999999999916,
+    "ci95_cluster_bootstrap": [
+      -0.1,
+      0.04
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__multi__assistant_only__seed42",
+    "alternative": "squad__multi__all_loss__seed42",
+    "evaluation": "squad/multi_rollout",
+    "delta_em": -0.019999999999999907,
+    "ci95_cluster_bootstrap": [
+      -0.08,
+      0.04
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__multi__assistant_only__seed42",
+    "alternative": "squad__multi__all_loss__seed42",
+    "evaluation": "adv/single",
+    "delta_em": -0.03,
+    "ci95_cluster_bootstrap": [
+      -0.09,
+      0.03
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__multi__assistant_only__seed42",
+    "alternative": "squad__multi__all_loss__seed42",
+    "evaluation": "adv/multi_gold_history",
+    "delta_em": -0.009999999999999981,
+    "ci95_cluster_bootstrap": [
+      -0.07,
+      0.05
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__multi__assistant_only__seed42",
+    "alternative": "squad__multi__all_loss__seed42",
+    "evaluation": "adv/multi_rollout",
+    "delta_em": -0.01999999999999999,
+    "ci95_cluster_bootstrap": [
+      -0.08,
+      0.04
+    ],
+    "n": 100,
+    "passage_groups": 25
+  }
+]

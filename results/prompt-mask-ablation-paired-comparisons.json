@@ -1,0 +1,578 @@
+[
+  {
+    "reference": "adv__single__assistant_only__seed42",
+    "alternative": "adv__single__system_loss__seed42",
+    "evaluation": "squad/single",
+    "delta_em": -0.020000000000000018,
+    "ci95_cluster_bootstrap": [
+      -0.08,
+      0.03
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "adv__single__assistant_only__seed42",
+    "alternative": "adv__single__system_loss__seed42",
+    "evaluation": "squad/multi_gold_history",
+    "delta_em": 0.0,
+    "ci95_cluster_bootstrap": [
+      -0.06,
+      0.05
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "adv__single__assistant_only__seed42",
+    "alternative": "adv__single__system_loss__seed42",
+    "evaluation": "squad/multi_rollout",
+    "delta_em": -0.040000000000000036,
+    "ci95_cluster_bootstrap": [
+      -0.11,
+      0.02
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "adv__single__assistant_only__seed42",
+    "alternative": "adv__single__system_loss__seed42",
+    "evaluation": "adv/single",
+    "delta_em": -0.06999999999999998,
+    "ci95_cluster_bootstrap": [
+      -0.15,
+      -0.01
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "adv__single__assistant_only__seed42",
+    "alternative": "adv__single__system_loss__seed42",
+    "evaluation": "adv/multi_gold_history",
+    "delta_em": -0.01999999999999999,
+    "ci95_cluster_bootstrap": [
+      -0.07,
+      0.02
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "adv__single__assistant_only__seed42",
+    "alternative": "adv__single__system_loss__seed42",
+    "evaluation": "adv/multi_rollout",
+    "delta_em": -0.03999999999999998,
+    "ci95_cluster_bootstrap": [
+      -0.08,
+      0.0
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "adv__single__assistant_only__seed42",
+    "alternative": "adv__single__user_loss__seed42",
+    "evaluation": "squad/single",
+    "delta_em": -0.039999999999999925,
+    "ci95_cluster_bootstrap": [
+      -0.16,
+      0.07
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "adv__single__assistant_only__seed42",
+    "alternative": "adv__single__user_loss__seed42",
+    "evaluation": "squad/multi_gold_history",
+    "delta_em": -0.08999999999999997,
+    "ci95_cluster_bootstrap": [
+      -0.2,
+      0.01
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "adv__single__assistant_only__seed42",
+    "alternative": "adv__single__user_loss__seed42",
+    "evaluation": "squad/multi_rollout",
+    "delta_em": -0.17000000000000004,
+    "ci95_cluster_bootstrap": [
+      -0.28,
+      -0.06
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "adv__single__assistant_only__seed42",
+    "alternative": "adv__single__user_loss__seed42",
+    "evaluation": "adv/single",
+    "delta_em": -0.019999999999999962,
+    "ci95_cluster_bootstrap": [
+      -0.1,
+      0.06
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "adv__single__assistant_only__seed42",
+    "alternative": "adv__single__user_loss__seed42",
+    "evaluation": "adv/multi_gold_history",
+    "delta_em": -0.06,
+    "ci95_cluster_bootstrap": [
+      -0.14,
+      0.02
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "adv__single__assistant_only__seed42",
+    "alternative": "adv__single__user_loss__seed42",
+    "evaluation": "adv/multi_rollout",
+    "delta_em": -0.06,
+    "ci95_cluster_bootstrap": [
+      -0.13,
+      0.01
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__multi__assistant_only__seed42",
+    "alternative": "squad__multi__system_loss__seed42",
+    "evaluation": "squad/single",
+    "delta_em": -0.010000000000000009,
+    "ci95_cluster_bootstrap": [
+      -0.06,
+      0.04
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__multi__assistant_only__seed42",
+    "alternative": "squad__multi__system_loss__seed42",
+    "evaluation": "squad/multi_gold_history",
+    "delta_em": 0.030000000000000027,
+    "ci95_cluster_bootstrap": [
+      0.0,
+      0.06
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__multi__assistant_only__seed42",
+    "alternative": "squad__multi__system_loss__seed42",
+    "evaluation": "squad/multi_rollout",
+    "delta_em": 0.050000000000000044,
+    "ci95_cluster_bootstrap": [
+      0.01,
+      0.09
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__multi__assistant_only__seed42",
+    "alternative": "squad__multi__system_loss__seed42",
+    "evaluation": "adv/single",
+    "delta_em": -0.01999999999999999,
+    "ci95_cluster_bootstrap": [
+      -0.06,
+      0.02
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__multi__assistant_only__seed42",
+    "alternative": "squad__multi__system_loss__seed42",
+    "evaluation": "adv/multi_gold_history",
+    "delta_em": 0.010000000000000009,
+    "ci95_cluster_bootstrap": [
+      -0.02,
+      0.04
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__multi__assistant_only__seed42",
+    "alternative": "squad__multi__system_loss__seed42",
+    "evaluation": "adv/multi_rollout",
+    "delta_em": 0.0,
+    "ci95_cluster_bootstrap": [
+      0.0,
+      0.0
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__multi__assistant_only__seed42",
+    "alternative": "squad__multi__user_loss__seed42",
+    "evaluation": "squad/single",
+    "delta_em": -0.12,
+    "ci95_cluster_bootstrap": [
+      -0.21,
+      -0.04
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__multi__assistant_only__seed42",
+    "alternative": "squad__multi__user_loss__seed42",
+    "evaluation": "squad/multi_gold_history",
+    "delta_em": -0.039999999999999925,
+    "ci95_cluster_bootstrap": [
+      -0.1,
+      0.02
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__multi__assistant_only__seed42",
+    "alternative": "squad__multi__user_loss__seed42",
+    "evaluation": "squad/multi_rollout",
+    "delta_em": -0.009999999999999898,
+    "ci95_cluster_bootstrap": [
+      -0.07,
+      0.05
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__multi__assistant_only__seed42",
+    "alternative": "squad__multi__user_loss__seed42",
+    "evaluation": "adv/single",
+    "delta_em": -0.03999999999999998,
+    "ci95_cluster_bootstrap": [
+      -0.09,
+      0.01
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__multi__assistant_only__seed42",
+    "alternative": "squad__multi__user_loss__seed42",
+    "evaluation": "adv/multi_gold_history",
+    "delta_em": -0.03999999999999998,
+    "ci95_cluster_bootstrap": [
+      -0.1,
+      0.02
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__multi__assistant_only__seed42",
+    "alternative": "squad__multi__user_loss__seed42",
+    "evaluation": "adv/multi_rollout",
+    "delta_em": -0.01999999999999999,
+    "ci95_cluster_bootstrap": [
+      -0.07,
+      0.04
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__multi__assistant_only__seed42",
+    "alternative": "squad__multi__all_loss__seed42",
+    "evaluation": "squad/single",
+    "delta_em": -0.13,
+    "ci95_cluster_bootstrap": [
+      -0.21,
+      -0.06
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__multi__assistant_only__seed42",
+    "alternative": "squad__multi__all_loss__seed42",
+    "evaluation": "squad/multi_gold_history",
+    "delta_em": -0.029999999999999916,
+    "ci95_cluster_bootstrap": [
+      -0.1,
+      0.04
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__multi__assistant_only__seed42",
+    "alternative": "squad__multi__all_loss__seed42",
+    "evaluation": "squad/multi_rollout",
+    "delta_em": -0.019999999999999907,
+    "ci95_cluster_bootstrap": [
+      -0.08,
+      0.04
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__multi__assistant_only__seed42",
+    "alternative": "squad__multi__all_loss__seed42",
+    "evaluation": "adv/single",
+    "delta_em": -0.03,
+    "ci95_cluster_bootstrap": [
+      -0.09,
+      0.03
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__multi__assistant_only__seed42",
+    "alternative": "squad__multi__all_loss__seed42",
+    "evaluation": "adv/multi_gold_history",
+    "delta_em": -0.009999999999999981,
+    "ci95_cluster_bootstrap": [
+      -0.07,
+      0.05
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__multi__assistant_only__seed42",
+    "alternative": "squad__multi__all_loss__seed42",
+    "evaluation": "adv/multi_rollout",
+    "delta_em": -0.01999999999999999,
+    "ci95_cluster_bootstrap": [
+      -0.08,
+      0.04
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__single__assistant_only__seed42",
+    "alternative": "squad__single__system_loss__seed42",
+    "evaluation": "squad/single",
+    "delta_em": -0.010000000000000009,
+    "ci95_cluster_bootstrap": [
+      -0.06,
+      0.03
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__single__assistant_only__seed42",
+    "alternative": "squad__single__system_loss__seed42",
+    "evaluation": "squad/multi_gold_history",
+    "delta_em": -0.010000000000000009,
+    "ci95_cluster_bootstrap": [
+      -0.04,
+      0.02
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__single__assistant_only__seed42",
+    "alternative": "squad__single__system_loss__seed42",
+    "evaluation": "squad/multi_rollout",
+    "delta_em": 0.010000000000000009,
+    "ci95_cluster_bootstrap": [
+      -0.02,
+      0.04
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__single__assistant_only__seed42",
+    "alternative": "squad__single__system_loss__seed42",
+    "evaluation": "adv/single",
+    "delta_em": -0.05000000000000002,
+    "ci95_cluster_bootstrap": [
+      -0.1,
+      0.0
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__single__assistant_only__seed42",
+    "alternative": "squad__single__system_loss__seed42",
+    "evaluation": "adv/multi_gold_history",
+    "delta_em": -0.009999999999999981,
+    "ci95_cluster_bootstrap": [
+      -0.06,
+      0.03
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__single__assistant_only__seed42",
+    "alternative": "squad__single__system_loss__seed42",
+    "evaluation": "adv/multi_rollout",
+    "delta_em": -0.03,
+    "ci95_cluster_bootstrap": [
+      -0.08,
+      0.01
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__single__assistant_only__seed42",
+    "alternative": "squad__single__user_loss__seed42",
+    "evaluation": "squad/single",
+    "delta_em": -0.08999999999999997,
+    "ci95_cluster_bootstrap": [
+      -0.17,
+      -0.01
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__single__assistant_only__seed42",
+    "alternative": "squad__single__user_loss__seed42",
+    "evaluation": "squad/multi_gold_history",
+    "delta_em": -0.08999999999999997,
+    "ci95_cluster_bootstrap": [
+      -0.16,
+      -0.02
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__single__assistant_only__seed42",
+    "alternative": "squad__single__user_loss__seed42",
+    "evaluation": "squad/multi_rollout",
+    "delta_em": -0.08000000000000007,
+    "ci95_cluster_bootstrap": [
+      -0.15,
+      -0.01
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__single__assistant_only__seed42",
+    "alternative": "squad__single__user_loss__seed42",
+    "evaluation": "adv/single",
+    "delta_em": -0.010000000000000009,
+    "ci95_cluster_bootstrap": [
+      -0.08,
+      0.06
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__single__assistant_only__seed42",
+    "alternative": "squad__single__user_loss__seed42",
+    "evaluation": "adv/multi_gold_history",
+    "delta_em": 0.0,
+    "ci95_cluster_bootstrap": [
+      -0.08,
+      0.08
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__single__assistant_only__seed42",
+    "alternative": "squad__single__user_loss__seed42",
+    "evaluation": "adv/multi_rollout",
+    "delta_em": -0.04999999999999999,
+    "ci95_cluster_bootstrap": [
+      -0.12,
+      0.01
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__single__assistant_only__seed42",
+    "alternative": "squad__single__all_loss__seed42",
+    "evaluation": "squad/single",
+    "delta_em": -0.08999999999999997,
+    "ci95_cluster_bootstrap": [
+      -0.17,
+      -0.02
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__single__assistant_only__seed42",
+    "alternative": "squad__single__all_loss__seed42",
+    "evaluation": "squad/multi_gold_history",
+    "delta_em": -0.09999999999999998,
+    "ci95_cluster_bootstrap": [
+      -0.19,
+      -0.01
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__single__assistant_only__seed42",
+    "alternative": "squad__single__all_loss__seed42",
+    "evaluation": "squad/multi_rollout",
+    "delta_em": -0.12,
+    "ci95_cluster_bootstrap": [
+      -0.2,
+      -0.04
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__single__assistant_only__seed42",
+    "alternative": "squad__single__all_loss__seed42",
+    "evaluation": "adv/single",
+    "delta_em": 0.0,
+    "ci95_cluster_bootstrap": [
+      -0.07,
+      0.08
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__single__assistant_only__seed42",
+    "alternative": "squad__single__all_loss__seed42",
+    "evaluation": "adv/multi_gold_history",
+    "delta_em": 0.0,
+    "ci95_cluster_bootstrap": [
+      -0.08,
+      0.08
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__single__assistant_only__seed42",
+    "alternative": "squad__single__all_loss__seed42",
+    "evaluation": "adv/multi_rollout",
+    "delta_em": -0.04999999999999999,
+    "ci95_cluster_bootstrap": [
+      -0.12,
+      0.02
+    ],
+    "n": 100,
+    "passage_groups": 25
+  }
+]
