@@ -69,3 +69,47 @@ EM/word-overlap F1, deterministic greedy generation, base checkpoint 포함. CoQ
 실행 시 `EPOCHS=1`로 epoch 수를 지정할 수 있습니다. per-device batch size는 1입니다.
 
 로컬 검증: Python compile, bash syntax, offline construction/masking/metric smoke tests. GPU 학습/평가 결과는 완료된 출력 파일이 있을 때만 보고합니다.
+
+## 추가 파일럿: 0.5B prompt-mask ablation (부분 실행)
+
+별도 실험 폴더에서 `Qwen/Qwen2.5-0.5B-Instruct`로 수행한 1 epoch 결과입니다. 계획한 24개 조합 중 12개가 학습되었고, 그중 **11개만 평가까지 완료**되었습니다. `adv / single / all_loss`는 학습 adapter만 생성되고 평가되지 않아 아래 표와 비교에서 제외했습니다. Seed 42, batch size 1, 데이터셋별 1,000 train answer targets 및 100 validation targets입니다. 아래 값은 SQuAD-style exact match (EM)이며, 각 평가 모드의 n=100입니다.
+
+### SQuAD validation
+
+| 학습 데이터 / 형식 / loss | Single | Multi gold history | Multi rollout |
+|---|---:|---:|---:|
+| Base (no fine-tuning) | 0.58 | 0.53 | 0.56 |
+| SQuAD / single / assistant-only | 0.72 | 0.64 | 0.65 |
+| SQuAD / single / system loss | 0.71 | 0.63 | 0.66 |
+| SQuAD / single / user loss | 0.63 | 0.55 | 0.57 |
+| SQuAD / single / all loss | 0.63 | 0.54 | 0.53 |
+| SQuAD / multi / assistant-only | **0.74** | 0.69 | 0.69 |
+| SQuAD / multi / system loss | 0.73 | **0.72** | **0.74** |
+| SQuAD / multi / user loss | 0.62 | 0.65 | 0.68 |
+| SQuAD / multi / all loss | 0.61 | 0.66 | 0.67 |
+| AdversarialQA / single / assistant-only | 0.60 | 0.63 | 0.65 |
+| AdversarialQA / single / system loss | 0.58 | 0.63 | 0.61 |
+| AdversarialQA / single / user loss | 0.56 | 0.54 | 0.48 |
+
+### AdversarialQA validation
+
+| 학습 데이터 / 형식 / loss | Single | Multi gold history | Multi rollout |
+|---|---:|---:|---:|
+| Base (no fine-tuning) | 0.25 | 0.22 | 0.19 |
+| SQuAD / single / assistant-only | 0.23 | 0.21 | 0.21 |
+| SQuAD / single / system loss | 0.18 | 0.20 | 0.18 |
+| SQuAD / single / user loss | 0.22 | 0.21 | 0.16 |
+| SQuAD / single / all loss | 0.23 | 0.21 | 0.16 |
+| SQuAD / multi / assistant-only | 0.24 | 0.24 | 0.22 |
+| SQuAD / multi / system loss | 0.22 | 0.25 | 0.22 |
+| SQuAD / multi / user loss | 0.20 | 0.20 | 0.20 |
+| SQuAD / multi / all loss | 0.21 | 0.23 | 0.20 |
+| AdversarialQA / single / assistant-only | **0.29** | **0.25** | **0.24** |
+| AdversarialQA / single / system loss | 0.22 | 0.23 | 0.20 |
+| AdversarialQA / single / user loss | 0.27 | 0.19 | 0.18 |
+
+**초기 해석:** SQuAD 평가에서는 SQuAD로 학습한 조건의 점수가 대체로 base보다 높았고, 최고 single EM은 multi/assistant-only의 0.74였습니다. 하지만 multi/system-loss가 multi-turn 지표에서 가장 높았으므로 assistant-only가 일관된 승자라고 할 수는 없습니다. AdversarialQA 평가에서는 SQuAD 학습 조건의 이득이 일관되지 않았으며, 데이터셋 내 비교도 완료된 세 조건뿐입니다. 따라서 데이터 혼합 효과나 24개 조건 전체의 우열은 이 부분 실행만으로 판단할 수 없습니다.
+
+Single 대 multi 형식의 SQuAD-trained assistant-only 직접 비교에서 EM 차이(multi − single)는 SQuAD 평가에서 +0.02 (single), +0.05 (multi gold), +0.04 (rollout)이었습니다. passage-cluster bootstrap 95% CI는 각각 [-0.04, 0.08], [-0.01, 0.12], [-0.02, 0.10]으로 모두 0을 포함합니다. 형식의 우위를 확인했다고 볼 수 없습니다. 한 seed·100문항 평가이므로 모든 관찰은 탐색적이며, prompt loss 비교는 prompt 토큰을 추가하는 동시에 assistant 토큰의 상대적 loss 비중도 바꾸는 비교입니다.
+
+전체 11개 조건의 EM, paired bootstrap 비교 및 형식/objective별 결과는 [요약 JSON](results/prompt-mask-ablation-summary.json), [mask 비교](results/prompt-mask-ablation-paired-comparisons.json), [single/multi 비교](results/prompt-mask-ablation-turn-format-comparison.json), [assistant-only/all-loss 비교](results/prompt-mask-ablation-objective-comparison.json)에 있습니다. 이 결과는 위의 Qwen2.5-1.5B SQuAD 파일럿 보고서와 별개의 실험입니다.
