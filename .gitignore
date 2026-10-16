@@ -7,4 +7,5 @@ results/*_base*.jsonl
 results/*.safetensors
 results/compare_*.json
 results/prompt_mask_repeat_passage/*.jsonl
+results/prompt_mask_repeat_passage/*.json
 *.py[cod]

@@ -120,14 +120,15 @@ Single 대 multi 형식의 SQuAD-trained assistant-only 직접 비교에서 EM �
 
 ### 후속 형식: 매 턴 지문 재제공
 
-원래 multi 형식은 첫 user 턴에만 지문을 제공하고 이후 독립 질문을 이어 붙입니다. 앞선 QA 쌍이 뒤 질문에 대한 in-context 예시처럼 기능할 수 있다는 점을 확인하기 위해 **각 user 턴에 지문과 해당 질문을 함께 제공**하는 형식을 추가하고 1-epoch 파일럿을 실행했습니다. 공통 데이터는 100 train groups와 20 held-out groups (각각 400/80 QA targets), Qwen2.5-0.5B-Instruct, seed 42, assistant-only loss입니다. 두 형식 모두 optimizer update 100회이며, 기본 형식 대비 지문 반복 형식은 입력 토큰이 31,390에서 83,683으로 증가했습니다.
+원래 multi 형식은 첫 user 턴에만 지문을 제공하고 이후 독립 질문을 이어 붙입니다. 앞선 QA 쌍이 뒤 질문에 대한 in-context 예시처럼 기능할 수 있다는 점을 확인하기 위해 **각 user 턴에 지문과 해당 질문을 함께 제공**하는 형식을 추가하고 1-epoch 파일럿을 실행했습니다. single-turn 대조군도 같은 학습 QA를 질문별 독립 시퀀스로 만들어 함께 학습했습니다. 공통 데이터는 100 train groups와 20 held-out groups (각각 400/80 QA targets), Qwen2.5-0.5B-Instruct, seed 42, assistant-only loss입니다. Single은 gradient accumulation 4, multi는 한 시퀀스에 4개 QA를 포함해 모든 형식에서 optimizer update를 100회로 맞췄습니다. 단, 업데이트마다 loss-token 합이 아니라 각 sequence의 평균 loss를 누적하므로 single과 multi의 token weighting은 완전히 같지 않습니다.
 
-| 학습 형식 | Multi gold EM / F1 | Multi rollout EM / F1 | Single EM / F1 |
+| 학습 형식 | Single 평가 EM / F1 | Multi gold EM / F1 | Multi rollout EM / F1 |
 |---|---:|---:|---:|
-| Base | 0.588 / 0.743 | 0.575 / 0.726 | 0.613 / 0.733 |
-| Original multi (passage only on turn 1) | **0.738 / 0.846** | 0.688 / 0.808 | 0.713 / 0.825 |
-| Repeat-passage multi (passage on every turn) | 0.713 / 0.827 | **0.700 / 0.843** | 0.713 / 0.827 |
+| Base | 0.613 / 0.733 | 0.588 / 0.743 | 0.575 / 0.726 |
+| Single-turn (QA별 독립 sequence) | **0.675 / 0.795** | 0.650 / 0.802 | 0.650 / 0.791 |
+| Original multi (passage only on turn 1) | **0.713 / 0.825** | **0.738 / 0.846** | 0.688 / 0.808 |
+| Repeat-passage multi (passage on every turn) | **0.713 / 0.827** | 0.713 / 0.827 | **0.688 / 0.826** |
 
-두 학습 형식의 F1 차이(repeat-passage minus original)는 gold multi -0.019, rollout multi +0.018, single +0.002였고, 각 passage-cluster bootstrap 95% CI가 모두 0을 포함했습니다(20개 passage). 따라서 이 작은 파일럿에서는 지문 반복 형식이 더 낫거나 나쁘다고 결론낼 수 없습니다. 반복 제공이 해당 질문에서 정답 근거를 다시 볼 수 있게 하는 대신, 입력 토큰/FLOPs를 크게 늘린다는 점도 비교 해석에 유의해야 합니다. SQuAD 질문은 독립적이므로 실제 history-dependent 대화 평가가 아닙니다.
+단일 대조군과 두 multi 학습 조건의 차이는 작고 불확실합니다. Single과 original multi를 비교하면 original multi의 F1이 single 평가에서 +0.030, multi gold에서 +0.044, multi rollout에서 +0.016 높았습니다. Single과 repeat-passage multi의 차이는 각각 +0.032, +0.025, +0.034였습니다. 이 여섯 비교의 paired CI는 모두 0을 포함합니다. Original multi와 repeat-passage multi의 차이도 평가 모드에 따라 방향이 달랐고 CI가 0을 포함했습니다. 따라서 few-shot 설명이나 특정 형식의 우위를 입증했다고 할 수 없습니다. 매 턴 지문 반복은 입력 토큰을 original multi의 31,390에서 83,683으로 늘렸고, single은 89,983 토큰을 사용했습니다. SQuAD 질문은 독립적이므로 실제 history-dependent 대화 평가가 아닙니다.
 
-학습/평가 파일은 [파일럿 출력 디렉터리](results/prompt_mask_repeat_passage/)에 있습니다. 이 결과는 앞의 1,000-target 0.5B 부분 ablation 및 기존 1.5B 파일럿과 별도이며, 작은 샘플·단일 seed의 탐색 결과입니다.
+학습/평가 파일은 [파일럿 출력 디렉터리](results/prompt_mask_repeat_passage/)에 있습니다. [같은 데이터 요약](results/prompt_mask_repeat_passage/same_data_comparison.json) 및 [paired 비교와 bootstrap CI](results/prompt_mask_repeat_passage/same_data_comparisons.json)도 포함합니다. 이 결과는 앞의 1,000-target 0.5B 부분 ablation 및 기존 1.5B 파일럿과 별도이며, 20개 평가 passage·단일 seed의 탐색 결과입니다.

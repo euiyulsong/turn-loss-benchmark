@@ -128,13 +128,14 @@ def train(a):
     def collate(batch):
         n=max(len(b['input_ids']) for b in batch)
         return {k:torch.tensor([b[k]+[(-100 if k=='labels' else 0 if k=='attention_mask' else tok.pad_token_id)]*(n-len(b[k])) for b in batch]) for k in ('input_ids','attention_mask','labels')}
-    # batch 1; single accumulates K QA targets/update, multi has K targets/sequence.
-    args=TrainingArguments(output_dir=a.output,per_device_train_batch_size=1,gradient_accumulation_steps=turns if a.format=='single' else 1,num_train_epochs=a.epochs,learning_rate=1e-4,lr_scheduler_type='cosine',warmup_steps=max(1,int((len(rows)//(turns if a.format=='single' else 1))*a.epochs*0.05)),logging_steps=20,save_strategy='no',report_to='none',bf16=dtype==torch.bfloat16,seed=a.seed,data_seed=a.seed,remove_unused_columns=False)
+    # Optionally match single-format optimizer updates to K-target multi sequences.
+    grad_accum=turns if a.format=='single' and a.match_multi_updates else 1
+    args=TrainingArguments(output_dir=a.output,per_device_train_batch_size=1,gradient_accumulation_steps=grad_accum,num_train_epochs=a.epochs,learning_rate=1e-4,lr_scheduler_type='cosine',warmup_steps=max(1,int((len(rows)//grad_accum)*a.epochs*0.05)),logging_steps=20,save_strategy='no',report_to='none',bf16=dtype==torch.bfloat16,seed=a.seed,data_seed=a.seed,remove_unused_columns=False)
     start=time.time(); trainer=Trainer(model=model,args=args,train_dataset=Dataset.from_list(rows),data_collator=collate); trainer.train()
     Path(a.output).mkdir(parents=True,exist_ok=True)
     model.save_pretrained(a.output); tok.save_pretrained(a.output)
     completed_steps=trainer.state.global_step
-    Path(a.output+'/run.json').write_text(json.dumps({'format':a.format,'repeat_passage':a.repeat_passage if a.format=='multi' else False,'loss':a.loss,'seed':a.seed,'model':a.model,'elapsed_seconds':time.time()-start,'epochs':a.epochs,'targets':len(groups)*turns,'input_tokens_per_epoch':sum(len(r['input_ids']) for r in rows),'loss_tokens_per_epoch':sum(sum(v!=-100 for v in r['labels']) for v in rows),'optimizer_steps':completed_steps,'completed':completed_steps==args.max_steps if args.max_steps>0 else trainer.state.epoch>=a.epochs},indent=2))
+    Path(a.output+'/run.json').write_text(json.dumps({'format':a.format,'repeat_passage':a.repeat_passage if a.format=='multi' else False,'match_multi_updates':a.match_multi_updates if a.format=='single' else False,'loss':a.loss,'seed':a.seed,'model':a.model,'elapsed_seconds':time.time()-start,'epochs':a.epochs,'targets':len(groups)*turns,'input_tokens_per_epoch':sum(len(r['input_ids']) for r in rows),'loss_tokens_per_epoch':sum(sum(v!=-100 for v in r['labels']) for r in rows),'optimizer_steps':completed_steps,'gradient_accumulation_steps':grad_accum,'completed':completed_steps==args.max_steps if args.max_steps>0 else trainer.state.epoch>=a.epochs},indent=2))
 
 def norm(s):
     return ' '.join(re.sub(r'\b(a|an|the)\b',' ',s.lower().translate(str.maketrans('','',string.punctuation))).split())
@@ -178,17 +179,19 @@ def evaluate(a):
             for i,qa in enumerate(g['qa']):
                 p=predict(single(g,i,manifest['dataset'])[:-1]); em,f1=score(p,qa['a']); rows.append({'group':g['id'],'turn':i+1,'mode':'single','prediction':p,'references':qa['a'],'em':em,'f1':f1})
                 p=predict(coqa_multi_prompt(g,i)); em,f1=score(p,qa['a']); rows.append({'group':g['id'],'turn':i+1,'mode':'multi_gold','prediction':p,'references':qa['a'],'em':em,'f1':f1})
-        # Rollout with own earlier answers; no teacher forcing.
-        history=[{'role':'system','content':SYSTEM}]
-        for i,qa in enumerate(g['qa']):
-            history.append({'role':'user','content':('Passage:\n'+g['context']+'\n\n' if i==0 or manifest['dataset']=='squad' else '')+'Question: '+qa['q']})
-            p=predict(history); em,f1=score(p,qa['a']); rows.append({'group':g['id'],'turn':i+1,'mode':'multi_repeat_passage_rollout','prediction':p,'references':qa['a'],'em':em,'f1':f1}); history.append({'role':'assistant','content':p})
-        # Original format: passage appears only on turn 1; later questions may
-        # exploit prior QA turns as in-context examples.
-        history=[{'role':'system','content':SYSTEM}]
-        for i,qa in enumerate(g['qa']):
-            history.append({'role':'user','content':('Passage:\n'+g['context']+'\n\n' if i==0 else '')+'Question: '+qa['q']})
-            p=predict(history); em,f1=score(p,qa['a']); rows.append({'group':g['id'],'turn':i+1,'mode':'multi_rollout','prediction':p,'references':qa['a'],'em':em,'f1':f1}); history.append({'role':'assistant','content':p})
+        if manifest['dataset']=='squad':
+            # Rollout variants differ only in whether every turn re-supplies the passage.
+            for mode,repeat in [('multi_repeat_passage_rollout',True),('multi_rollout',False)]:
+                history=[{'role':'system','content':SYSTEM}]
+                for i,qa in enumerate(g['qa']):
+                    history.append({'role':'user','content':('Passage:\n'+g['context']+'\n\n' if repeat or i==0 else '')+'Question: '+qa['q']})
+                    p=predict(history); em,f1=score(p,qa['a']); rows.append({'group':g['id'],'turn':i+1,'mode':mode,'prediction':p,'references':qa['a'],'em':em,'f1':f1}); history.append({'role':'assistant','content':p})
+        else:
+            # CoQA rollout keeps its original conversation structure (passage once).
+            history=[{'role':'system','content':SYSTEM}]
+            for i,qa in enumerate(g['qa']):
+                history.append({'role':'user','content':('Passage:\n'+g['context']+'\n\n' if i==0 else '')+'Question: '+qa['q']})
+                p=predict(history); em,f1=score(p,qa['a']); rows.append({'group':g['id'],'turn':i+1,'mode':'multi_rollout','prediction':p,'references':qa['a'],'em':em,'f1':f1}); history.append({'role':'assistant','content':p})
     write(a.output,rows)
     modes=sorted({r['mode'] for r in rows})
     metrics={m:{k:sum(r[k] for r in rows if r['mode']==m)/sum(r['mode']==m for r in rows) for k in ('em','f1')} for m in modes}
@@ -206,4 +209,4 @@ def compare(a):
     Path(a.output).write_text(json.dumps(report,indent=2)); print(report)
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser(); p.add_argument('command',choices=['prepare','train','eval','compare']); p.add_argument('--dataset',choices=['squad','coqa'],default='squad'); p.add_argument('--model',default='Qwen/Qwen2.5-1.5B-Instruct'); p.add_argument('--data',default='data/squad'); p.add_argument('--seed',type=int,default=42); p.add_argument('--turns',type=int,default=3); p.add_argument('--train-groups',type=int,default=1000); p.add_argument('--eval-groups',type=int,default=100); p.add_argument('--max-length',type=int,default=2048); p.add_argument('--format',choices=['single','multi'],default='multi'); p.add_argument('--repeat-passage',action='store_true',help='include the passage in every user turn for multi-format training'); p.add_argument('--loss',choices=['assistant','full'],default='assistant'); p.add_argument('--epochs',type=int,default=2); p.add_argument('--output',default='runs/model'); p.add_argument('--adapter'); p.add_argument('--expected-epochs',type=int,default=1); p.add_argument('--expected-steps',type=int,default=1000); p.add_argument('--left'); p.add_argument('--right'); a=p.parse_args(); {'prepare':prepare,'train':train,'eval':evaluate,'compare':compare}[a.command](a)
+    p=argparse.ArgumentParser(); p.add_argument('command',choices=['prepare','train','eval','compare']); p.add_argument('--dataset',choices=['squad','coqa'],default='squad'); p.add_argument('--model',default='Qwen/Qwen2.5-1.5B-Instruct'); p.add_argument('--data',default='data/squad'); p.add_argument('--seed',type=int,default=42); p.add_argument('--turns',type=int,default=3); p.add_argument('--train-groups',type=int,default=1000); p.add_argument('--eval-groups',type=int,default=100); p.add_argument('--max-length',type=int,default=2048); p.add_argument('--format',choices=['single','multi'],default='multi'); p.add_argument('--repeat-passage',action='store_true',help='include the passage in every user turn for multi-format training'); p.add_argument('--match-multi-updates',action='store_true',help='use gradient accumulation to match multi-format optimizer update count for single-format training'); p.add_argument('--loss',choices=['assistant','full'],default='assistant'); p.add_argument('--epochs',type=int,default=2); p.add_argument('--output',default='runs/model'); p.add_argument('--adapter'); p.add_argument('--expected-epochs',type=int,default=1); p.add_argument('--expected-steps',type=int,default=1000); p.add_argument('--left'); p.add_argument('--right'); a=p.parse_args(); {'prepare':prepare,'train':train,'eval':evaluate,'compare':compare}[a.command](a)

@@ -1,0 +1,136 @@
+{
+  "protocol": {
+    "model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "seed": 42,
+    "epochs": 1,
+    "loss": "assistant-only",
+    "train_groups": 100,
+    "eval_groups": 20,
+    "qa_targets_per_split": {
+      "train": 400,
+      "eval": 80
+    },
+    "optimizer_steps": {
+      "single": 100,
+      "original_multi": 100,
+      "repeat_passage_multi": 100
+    },
+    "gradient_accumulation_steps_single": 4,
+    "input_tokens_per_epoch": {
+      "single": 89983,
+      "original_multi": 31390,
+      "repeat_passage_multi": 83683
+    },
+    "training_answers": 400
+  },
+  "metrics": {
+    "base": {
+      "single": {
+        "em": 0.6125,
+        "f1": 0.7330040370133248,
+        "n": 80
+      },
+      "multi_gold": {
+        "em": 0.5875,
+        "f1": 0.7425723228296757,
+        "n": 80
+      },
+      "multi_repeat_passage_gold": {
+        "em": 0.6125,
+        "f1": 0.7311651882975412,
+        "n": 80
+      },
+      "multi_repeat_passage_rollout": {
+        "em": 0.6,
+        "f1": 0.7213799916101706,
+        "n": 80
+      },
+      "multi_rollout": {
+        "em": 0.575,
+        "f1": 0.725970437928558,
+        "n": 80
+      }
+    },
+    "single_matched_updates": {
+      "single": {
+        "em": 0.675,
+        "f1": 0.7948409595507118,
+        "n": 80
+      },
+      "multi_gold": {
+        "em": 0.65,
+        "f1": 0.8019440154066281,
+        "n": 80
+      },
+      "multi_repeat_passage_gold": {
+        "em": 0.6375,
+        "f1": 0.7771856274816801,
+        "n": 80
+      },
+      "multi_repeat_passage_rollout": {
+        "em": 0.6625,
+        "f1": 0.7904483492370489,
+        "n": 80
+      },
+      "multi_rollout": {
+        "em": 0.65,
+        "f1": 0.7912114146740274,
+        "n": 80
+      }
+    },
+    "original_multi": {
+      "single": {
+        "em": 0.7125,
+        "f1": 0.8245372521535312,
+        "n": 80
+      },
+      "multi_gold": {
+        "em": 0.7375,
+        "f1": 0.8455898127637258,
+        "n": 80
+      },
+      "multi_repeat_passage_gold": {
+        "em": 0.725,
+        "f1": 0.8354989454989454,
+        "n": 80
+      },
+      "multi_repeat_passage_rollout": {
+        "em": 0.725,
+        "f1": 0.8519065085241557,
+        "n": 80
+      },
+      "multi_rollout": {
+        "em": 0.6875,
+        "f1": 0.8076699948365549,
+        "n": 80
+      }
+    },
+    "repeat_passage_multi": {
+      "single": {
+        "em": 0.7125,
+        "f1": 0.8266700267863059,
+        "n": 80
+      },
+      "multi_gold": {
+        "em": 0.7125,
+        "f1": 0.8265103415103414,
+        "n": 80
+      },
+      "multi_repeat_passage_gold": {
+        "em": 0.6875,
+        "f1": 0.8271677153722298,
+        "n": 80
+      },
+      "multi_repeat_passage_rollout": {
+        "em": 0.7,
+        "f1": 0.8430877757040548,
+        "n": 80
+      },
+      "multi_rollout": {
+        "em": 0.6875,
+        "f1": 0.8256228038029508,
+        "n": 80
+      }
+    }
+  }
+}
