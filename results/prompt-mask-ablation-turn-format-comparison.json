@@ -1,0 +1,74 @@
+[
+  {
+    "reference": "squad__single__assistant_only__seed42",
+    "alternative": "squad__multi__assistant_only__seed42",
+    "evaluation": "squad/single",
+    "delta_em": 0.020000000000000018,
+    "ci95_cluster_bootstrap": [
+      -0.04,
+      0.08
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__single__assistant_only__seed42",
+    "alternative": "squad__multi__assistant_only__seed42",
+    "evaluation": "squad/multi_gold_history",
+    "delta_em": 0.04999999999999993,
+    "ci95_cluster_bootstrap": [
+      -0.01,
+      0.12
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__single__assistant_only__seed42",
+    "alternative": "squad__multi__assistant_only__seed42",
+    "evaluation": "squad/multi_rollout",
+    "delta_em": 0.039999999999999925,
+    "ci95_cluster_bootstrap": [
+      -0.02,
+      0.1
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__single__assistant_only__seed42",
+    "alternative": "squad__multi__assistant_only__seed42",
+    "evaluation": "adv/single",
+    "delta_em": 0.009999999999999981,
+    "ci95_cluster_bootstrap": [
+      -0.06,
+      0.07
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__single__assistant_only__seed42",
+    "alternative": "squad__multi__assistant_only__seed42",
+    "evaluation": "adv/multi_gold_history",
+    "delta_em": 0.03,
+    "ci95_cluster_bootstrap": [
+      -0.05,
+      0.11
+    ],
+    "n": 100,
+    "passage_groups": 25
+  },
+  {
+    "reference": "squad__single__assistant_only__seed42",
+    "alternative": "squad__multi__assistant_only__seed42",
+    "evaluation": "adv/multi_rollout",
+    "delta_em": 0.010000000000000009,
+    "ci95_cluster_bootstrap": [
+      -0.05,
+      0.07
+    ],
+    "n": 100,
+    "passage_groups": 25
+  }
+]
