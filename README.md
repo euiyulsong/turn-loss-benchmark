@@ -129,6 +129,12 @@ Single 대 multi 형식의 SQuAD-trained assistant-only 직접 비교에서 EM �
 | Original multi (passage only on turn 1) | **0.713 / 0.825** | **0.738 / 0.846** | 0.688 / 0.808 |
 | Repeat-passage multi (passage on every turn) | **0.713 / 0.827** | 0.713 / 0.827 | **0.688 / 0.826** |
 
+#### Multi 평가 방식
+
+- **Multi gold-history (`multi_gold`)**: 평가 turn까지의 gold 대화 이력을 넣고, 이전 정답 답변도 문맥에 포함해 다음 답을 생성합니다. 앞선 답변 오류가 뒤 turn에 누적되지 않는 teacher-forced 평가입니다.
+- **Multi rollout (`multi_rollout`)**: 모델의 직전 생성 답변을 대화 이력으로 넣어 다음 답을 생성합니다. 앞선 답변 오류가 이후 turn 입력에 영향을 주는 자율 rollout 평가입니다.
+- 위 두 평가는 **기존 multi 형식**으로 수행하며, 지문은 첫 turn에만 제공합니다. Repeat-passage multi를 평가할 때는 별도 `multi_repeat_passage_gold` 및 `multi_repeat_passage_rollout` 모드를 사용해 각 user turn마다 지문을 다시 제공합니다. 표의 multi 열은 모델 형식 간 공통 비교를 위해 기존 multi 입력 방식 기준입니다.
+
 단일 대조군과 두 multi 학습 조건의 차이는 작고 불확실합니다. Single과 original multi를 비교하면 original multi의 F1이 single 평가에서 +0.030, multi gold에서 +0.044, multi rollout에서 +0.016 높았습니다. Single과 repeat-passage multi의 차이는 각각 +0.032, +0.025, +0.034였습니다. 이 여섯 비교의 paired CI는 모두 0을 포함합니다. Original multi와 repeat-passage multi의 차이도 평가 모드에 따라 방향이 달랐고 CI가 0을 포함했습니다. 따라서 few-shot 설명이나 특정 형식의 우위를 입증했다고 할 수 없습니다. 매 턴 지문 반복은 입력 토큰을 original multi의 31,390에서 83,683으로 늘렸고, single은 89,983 토큰을 사용했습니다. SQuAD 질문은 독립적이므로 실제 history-dependent 대화 평가가 아닙니다.
 
-학습/평가 파일은 [파일럿 출력 디렉터리](results/prompt_mask_repeat_passage/)에 있습니다. [같은 데이터 요약](results/prompt_mask_repeat_passage/same_data_comparison.json) 및 [paired 비교와 bootstrap CI](results/prompt_mask_repeat_passage/same_data_comparisons.json)도 포함합니다. 이 결과는 앞의 1,000-target 0.5B 부분 ablation 및 기존 1.5B 파일럿과 별도이며, 20개 평가 passage·단일 seed의 탐색 결과입니다.
+학습/평가 파일은 [파일럿 출력 디렉터리](results/prompt_mask_repeat_passage/)에 있습니다. JSONL의 `multi_gold`, `multi_rollout`, `multi_repeat_passage_gold`, `multi_repeat_passage_rollout` 레코드로 평가 모드별 결과를 확인할 수 있습니다. [같은 데이터 요약](results/prompt_mask_repeat_passage/same_data_comparison.json) 및 [paired 비교와 bootstrap CI](results/prompt_mask_repeat_passage/same_data_comparisons.json)도 포함합니다. 이 결과는 앞의 1,000-target 0.5B 부분 ablation 및 기존 1.5B 파일럿과 별도이며, 20개 평가 passage·단일 seed의 탐색 결과입니다.
