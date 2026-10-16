@@ -1,6 +1,6 @@
 # Prompt loss × single/multi-turn SFT benchmark
 
-실험 스크립트 및 실행 호환성은 검증 중입니다. 기본 모델은 Qwen2.5-1.5B-Instruct, LoRA입니다. Qwen3 thinking/template 변형은 기본 검증 범위 밖입니다. 설치한 라이브러리 버전이 requirements.txt와 다르면 호환성 이슈가 있을 수 있습니다. 이번 저장소의 SQuAD 파일럿 결과는 [실험 보고서](REPORT.md)에 기록했습니다.
+실험 스크립트 및 실행 호환성은 검증 중입니다. 기본 모델은 Qwen2.5-1.5B-Instruct, LoRA입니다. Qwen3 thinking/template 변형은 기본 검증 범위 밖입니다. 설치한 라이브러리 버전이 requirements.txt와 다르면 호환성 이슈가 있을 수 있습니다. SQuAD 파일럿 결과는 [실험 보고서](REPORT.md), 자연스러운 multi-turn CoQA 후속 실험은 [CoQA 보고서](COQA_REPORT.md)에 기록했습니다.
 
 ## 실행
 
@@ -69,6 +69,10 @@ EM/word-overlap F1, deterministic greedy generation, base checkpoint 포함. CoQ
 실행 시 `EPOCHS=1`로 epoch 수를 지정할 수 있습니다. per-device batch size는 1입니다.
 
 로컬 검증: Python compile, bash syntax, offline construction/masking/metric smoke tests. GPU 학습/평가 결과는 완료된 출력 파일이 있을 때만 보고합니다.
+
+## CoQA follow-up experiment
+
+The completed CoQA follow-up results, paired confidence intervals, and interpretation are in [COQA_REPORT.md](COQA_REPORT.md). It uses three consecutive human QA turns per story and compares flattened single-turn history against separate conversational turns.
 
 ## 추가 파일럿: 0.5B prompt-mask ablation (부분 실행)
 
