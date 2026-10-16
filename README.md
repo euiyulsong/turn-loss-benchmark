@@ -135,7 +135,9 @@ Single 대 multi 형식의 SQuAD-trained assistant-only 직접 비교에서 EM �
 - **Multi rollout (`multi_rollout`)**: 모델의 직전 생성 답변을 대화 이력으로 넣어 다음 답을 생성합니다. 앞선 답변 오류가 이후 turn 입력에 영향을 주는 자율 rollout 평가입니다.
 - 위 두 평가는 **기존 multi 형식**으로 수행하며, 지문은 첫 turn에만 제공합니다. Repeat-passage multi를 평가할 때는 별도 `multi_repeat_passage_gold` 및 `multi_repeat_passage_rollout` 모드를 사용해 각 user turn마다 지문을 다시 제공합니다. 표의 multi 열은 모델 형식 간 공통 비교를 위해 기존 multi 입력 방식 기준입니다.
 
-예를 들어 두 번째 질문을 평가할 때, gold-history는 이전 정답(`inherited from the Jin dynasty`)을 넣고, rollout은 모델이 첫 질문에 실제 생성한 답을 넣습니다. 두 경우 모두 두 번째 turn에는 새 지문을 추가하지 않습니다.
+예를 들어 두 번째 질문을 평가할 때, `multi_gold`는 이전 정답을 이력에 넣고 `multi_rollout`은 모델이 첫 질문에 실제 생성한 답을 넣습니다. 두 경우 모두 두 번째 turn에는 새 지문을 추가하지 않습니다.
+
+**Multi gold-history (`multi_gold`) 입력 예시** — 첫 답은 데이터셋의 gold 정답입니다.
 
 ```json
 [
@@ -146,7 +148,18 @@ Single 대 multi 형식의 SQuAD-trained assistant-only 직접 비교에서 EM �
 ]
 ```
 
-위 이력에서 `multi_gold`는 세 번째 메시지의 assistant 내용을 gold 정답으로 사용합니다. `multi_rollout`은 그 자리에 모델이 첫 질문에 대해 생성한 예측을 넣고, 그 문맥으로 두 번째 답을 생성합니다. `multi_repeat_passage_gold` 평가에서는 두 번째 user 메시지에도 전체 지문을 다시 포함합니다.
+**Multi rollout (`multi_rollout`) 입력 예시** — 첫 답은 모델의 실제 생성 결과라고 가정합니다. 예시에서는 모델이 짧은 답 대신 설명을 덧붙여 생성한 경우를 보여줍니다.
+
+```json
+[
+  {"role": "system", "content": "Answer the question using the passage. Output only the short answer, without explanation."},
+  {"role": "user", "content": "Passage: [Yuan 의학에 관한 지문]\n\nQuestion: How did the Yuan come to have the 4 schools of medicine?"},
+  {"role": "assistant", "content": "They inherited the four schools from the Jin dynasty."},
+  {"role": "user", "content": "Question: What techniques did Chinese medicine include?"}
+]
+```
+
+즉 rollout에서는 앞선 모델 답변이 틀리거나 장황해도 그대로 다음 턴의 문맥으로 들어갑니다. `multi_repeat_passage_gold`는 gold-history와 같되 두 번째 user 메시지에도 전체 지문을 다시 포함합니다.
 
 단일 대조군과 두 multi 학습 조건의 차이는 작고 불확실합니다. Single과 original multi를 비교하면 original multi의 F1이 single 평가에서 +0.030, multi gold에서 +0.044, multi rollout에서 +0.016 높았습니다. Single과 repeat-passage multi의 차이는 각각 +0.032, +0.025, +0.034였습니다. 이 여섯 비교의 paired CI는 모두 0을 포함합니다. Original multi와 repeat-passage multi의 차이도 평가 모드에 따라 방향이 달랐고 CI가 0을 포함했습니다. 따라서 few-shot 설명이나 특정 형식의 우위를 입증했다고 할 수 없습니다. 매 턴 지문 반복은 입력 토큰을 original multi의 31,390에서 83,683으로 늘렸고, single은 89,983 토큰을 사용했습니다. SQuAD 질문은 독립적이므로 실제 history-dependent 대화 평가가 아닙니다.
 
