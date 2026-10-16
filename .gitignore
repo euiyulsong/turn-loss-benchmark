@@ -5,4 +5,5 @@ runs/
 results/*.jsonl
 results/*_base*.jsonl
 results/*.safetensors
+results/compare_*.json
 *.py[cod]
