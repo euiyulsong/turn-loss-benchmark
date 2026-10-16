@@ -113,3 +113,17 @@ EM/word-overlap F1, deterministic greedy generation, base checkpoint 포함. CoQ
 Single 대 multi 형식의 SQuAD-trained assistant-only 직접 비교에서 EM 차이(multi − single)는 SQuAD 평가에서 +0.02 (single), +0.05 (multi gold), +0.04 (rollout)이었습니다. passage-cluster bootstrap 95% CI는 각각 [-0.04, 0.08], [-0.01, 0.12], [-0.02, 0.10]으로 모두 0을 포함합니다. 형식의 우위를 확인했다고 볼 수 없습니다. 한 seed·100문항 평가이므로 모든 관찰은 탐색적이며, prompt loss 비교는 prompt 토큰을 추가하는 동시에 assistant 토큰의 상대적 loss 비중도 바꾸는 비교입니다.
 
 전체 11개 조건의 EM, paired bootstrap 비교 및 형식/objective별 결과는 [요약 JSON](results/prompt-mask-ablation-summary.json), [mask 비교](results/prompt-mask-ablation-paired-comparisons.json), [single/multi 비교](results/prompt-mask-ablation-turn-format-comparison.json), [assistant-only/all-loss 비교](results/prompt-mask-ablation-objective-comparison.json)에 있습니다. 이 결과는 위의 Qwen2.5-1.5B SQuAD 파일럿 보고서와 별개의 실험입니다.
+
+### 후속 형식: 매 턴 지문 재제공
+
+원래 multi 형식은 첫 user 턴에만 지문을 제공하고 이후 독립 질문을 이어 붙입니다. 앞선 QA 쌍이 뒤 질문에 대한 in-context 예시처럼 기능할 수 있다는 점을 확인하기 위해 **각 user 턴에 지문과 해당 질문을 함께 제공**하는 형식을 추가하고 1-epoch 파일럿을 실행했습니다. 공통 데이터는 100 train groups와 20 held-out groups (각각 400/80 QA targets), Qwen2.5-0.5B-Instruct, seed 42, assistant-only loss입니다. 두 형식 모두 optimizer update 100회이며, 기본 형식 대비 지문 반복 형식은 입력 토큰이 31,390에서 83,683으로 증가했습니다.
+
+| 학습 형식 | Multi gold EM / F1 | Multi rollout EM / F1 | Single EM / F1 |
+|---|---:|---:|---:|
+| Base | 0.588 / 0.743 | 0.575 / 0.726 | 0.613 / 0.733 |
+| Original multi (passage only on turn 1) | **0.738 / 0.846** | 0.688 / 0.808 | 0.713 / 0.825 |
+| Repeat-passage multi (passage on every turn) | 0.713 / 0.827 | **0.700 / 0.843** | 0.713 / 0.827 |
+
+두 학습 형식의 F1 차이(repeat-passage minus original)는 gold multi -0.019, rollout multi +0.018, single +0.002였고, 각 passage-cluster bootstrap 95% CI가 모두 0을 포함했습니다(20개 passage). 따라서 이 작은 파일럿에서는 지문 반복 형식이 더 낫거나 나쁘다고 결론낼 수 없습니다. 반복 제공이 해당 질문에서 정답 근거를 다시 볼 수 있게 하는 대신, 입력 토큰/FLOPs를 크게 늘린다는 점도 비교 해석에 유의해야 합니다. SQuAD 질문은 독립적이므로 실제 history-dependent 대화 평가가 아닙니다.
+
+학습/평가 파일은 [파일럿 출력 디렉터리](results/prompt_mask_repeat_passage/)에 있습니다. 이 결과는 앞의 1,000-target 0.5B 부분 ablation 및 기존 1.5B 파일럿과 별도이며, 작은 샘플·단일 seed의 탐색 결과입니다.

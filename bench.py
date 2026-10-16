@@ -6,11 +6,12 @@ def write(path, rows):
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     Path(path).write_text(''.join(json.dumps(r,ensure_ascii=False)+'\n' for r in rows))
 def read(path): return [json.loads(l) for l in Path(path).read_text().splitlines()]
-def messages(g, upto=None):
+def messages(g, upto=None, repeat_passage=False):
     pairs=g['qa'] if upto is None else g['qa'][:upto]
     out=[{'role':'system','content':SYSTEM}]
     for i,p in enumerate(pairs):
-        out.append({'role':'user','content':('Passage:\n'+g['context']+'\n\n' if i==0 else '')+'Question: '+p['q']})
+        include_passage=repeat_passage or i==0
+        out.append({'role':'user','content':('Passage:\n'+g['context']+'\n\n' if include_passage else '')+'Question: '+p['q']})
         out.append({'role':'assistant','content':p['a'][0]})
     return out
 
@@ -43,7 +44,7 @@ def prepare(a):
                 result.append({'id':str(r['id']),'title':str(r['source']),'context':r['story'],'qa':[{'q':q,'a':[ans]} for q,ans in zip(r['questions'][:a.turns],r['answers']['input_text'][:a.turns])]})
         eligible=[]
         for g in result:
-            variants=[messages(g)]+[single(g,i,a.dataset) for i in range(a.turns)]
+            variants=[messages(g)]+[messages(g,repeat_passage=True)]+[single(g,i,a.dataset) for i in range(a.turns)]
             if max(len(tok.apply_chat_template(m,tokenize=True)) for m in variants)<=a.max_length-64: eligible.append(g)
         rng.shuffle(eligible); return eligible
     tr=groups(ds['train']); ev=groups(ds['validation'])
@@ -105,7 +106,8 @@ def train(a):
     tok=AutoTokenizer.from_pretrained(a.model); tok.pad_token=tok.eos_token
     if a.loss=='assistant' and not hasattr(tok,'convert_tokens_to_ids'):
         raise ValueError('Tokenizer lacks special-token ID support required for assistant-only masking')
-    ms=[messages(g) for g in groups] if a.format=='multi' else [single(g,i,manifest['dataset']) for g in groups for i in range(turns)]
+    ms=([messages(g,repeat_passage=a.repeat_passage) for g in groups]
+        if a.format=='multi' else [single(g,i,manifest['dataset']) for g in groups for i in range(turns)])
     rows=[encode(tok,m,a.loss) for m in ms]
     if max(len(r['input_ids']) for r in rows)>manifest['max_length']: raise ValueError('Length exceeded: prepare with current model')
     if manifest['model']!=a.model: raise ValueError('Prepare and train model mismatch')
@@ -121,7 +123,7 @@ def train(a):
     start=time.time(); Trainer(model=model,args=args,train_dataset=Dataset.from_list(rows),data_collator=collate).train()
     Path(a.output).mkdir(parents=True,exist_ok=True)
     model.save_pretrained(a.output); tok.save_pretrained(a.output)
-    Path(a.output+'/run.json').write_text(json.dumps({'format':a.format,'loss':a.loss,'seed':a.seed,'model':a.model,'elapsed_seconds':time.time()-start,'epochs':a.epochs,'targets':len(groups)*turns,'input_tokens_per_epoch':sum(len(r['input_ids']) for r in rows),'loss_tokens_per_epoch':sum(sum(v!=-100 for v in r['labels']) for r in rows),'optimizer_steps':args.max_steps if args.max_steps>0 else int(len(rows)*a.epochs//args.gradient_accumulation_steps)},indent=2))
+    Path(a.output+'/run.json').write_text(json.dumps({'format':a.format,'repeat_passage':a.repeat_passage if a.format=='multi' else False,'loss':a.loss,'seed':a.seed,'model':a.model,'elapsed_seconds':time.time()-start,'epochs':a.epochs,'targets':len(groups)*turns,'input_tokens_per_epoch':sum(len(r['input_ids']) for r in rows),'loss_tokens_per_epoch':sum(sum(v!=-100 for v in r['labels']) for r in rows),'optimizer_steps':args.max_steps if args.max_steps>0 else int(len(rows)*a.epochs//args.gradient_accumulation_steps)},indent=2))
 
 def norm(s):
     return ' '.join(re.sub(r'\b(a|an|the)\b',' ',s.lower().translate(str.maketrans('','',string.punctuation))).split())
@@ -148,27 +150,36 @@ def evaluate(a):
     for gi,g in enumerate(gs,1):
         if gi%10==0: print(f'Evaluated {gi}/{len(gs)} groups',flush=True)
         for i in range(len(g['qa'])):
-            for mode in ('single','multi_gold'):
-                ms=single(g,i,manifest['dataset'])[:-1] if mode=='single' else messages(g,i+1)[:-1]
+            for mode in ('single','multi_gold','multi_repeat_passage_gold'):
+                ms=(single(g,i,manifest['dataset'])[:-1] if mode=='single' else
+                    messages(g,i+1,repeat_passage=(mode=='multi_repeat_passage_gold'))[:-1])
                 p=predict(ms); em,f1=score(p,g['qa'][i]['a']); rows.append({'group':g['id'],'turn':i+1,'mode':mode,'prediction':p,'references':g['qa'][i]['a'],'em':em,'f1':f1})
         # Rollout with own earlier answers; no teacher forcing.
+        history=[{'role':'system','content':SYSTEM}]
+        for i,qa in enumerate(g['qa']):
+            history.append({'role':'user','content':'Passage:\n'+g['context']+'\n\nQuestion: '+qa['q']})
+            p=predict(history); em,f1=score(p,qa['a']); rows.append({'group':g['id'],'turn':i+1,'mode':'multi_repeat_passage_rollout','prediction':p,'references':qa['a'],'em':em,'f1':f1}); history.append({'role':'assistant','content':p})
+        # Original format: passage appears only on turn 1; later questions may
+        # exploit prior QA turns as in-context examples.
         history=[{'role':'system','content':SYSTEM}]
         for i,qa in enumerate(g['qa']):
             history.append({'role':'user','content':('Passage:\n'+g['context']+'\n\n' if i==0 else '')+'Question: '+qa['q']})
             p=predict(history); em,f1=score(p,qa['a']); rows.append({'group':g['id'],'turn':i+1,'mode':'multi_rollout','prediction':p,'references':qa['a'],'em':em,'f1':f1}); history.append({'role':'assistant','content':p})
     write(a.output,rows)
-    print({m:{k:sum(r[k] for r in rows if r['mode']==m)/sum(r['mode']==m for r in rows) for k in ('em','f1')} for m in ('single','multi_gold','multi_rollout')})
+    modes=sorted({r['mode'] for r in rows})
+    print({m:{k:sum(r[k] for r in rows if r['mode']==m)/sum(r['mode']==m for r in rows) for k in ('em','f1')} for m in modes})
 
 def compare(a):
     import numpy as np
     x=read(a.left); y=read(a.right); dx={(r['group'],r['turn'],r['mode']):r for r in x}; dy={(r['group'],r['turn'],r['mode']):r for r in y}
     if dx.keys()!=dy.keys(): raise ValueError('Evaluation targets differ')
     rng=np.random.default_rng(a.seed); report={}
-    for mode in ('single','multi_gold','multi_rollout'):
+    modes=sorted({k[2] for k in dx})
+    for mode in modes:
         ids=sorted({k[0] for k in dx if k[2]==mode}); delta=np.array([np.mean([dx[k]['f1']-dy[k]['f1'] for k in dx if k[0]==g and k[2]==mode]) for g in ids])
         boot=delta[rng.integers(0,len(delta),(5000,len(delta)))].mean(1)
         report[mode]={'left_minus_right_f1':float(delta.mean()),'cluster_bootstrap_ci95':np.quantile(boot,[.025,.975]).tolist(),'n_passages':len(ids)}
     Path(a.output).write_text(json.dumps(report,indent=2)); print(report)
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser(); p.add_argument('command',choices=['prepare','train','eval','compare']); p.add_argument('--dataset',choices=['squad','coqa'],default='squad'); p.add_argument('--model',default='Qwen/Qwen2.5-1.5B-Instruct'); p.add_argument('--data',default='data/squad'); p.add_argument('--seed',type=int,default=42); p.add_argument('--turns',type=int,default=3); p.add_argument('--train-groups',type=int,default=1000); p.add_argument('--eval-groups',type=int,default=100); p.add_argument('--max-length',type=int,default=2048); p.add_argument('--format',choices=['single','multi'],default='multi'); p.add_argument('--loss',choices=['assistant','full'],default='assistant'); p.add_argument('--epochs',type=int,default=2); p.add_argument('--output',default='runs/model'); p.add_argument('--adapter'); p.add_argument('--left'); p.add_argument('--right'); a=p.parse_args(); {'prepare':prepare,'train':train,'eval':evaluate,'compare':compare}[a.command](a)
+    p=argparse.ArgumentParser(); p.add_argument('command',choices=['prepare','train','eval','compare']); p.add_argument('--dataset',choices=['squad','coqa'],default='squad'); p.add_argument('--model',default='Qwen/Qwen2.5-1.5B-Instruct'); p.add_argument('--data',default='data/squad'); p.add_argument('--seed',type=int,default=42); p.add_argument('--turns',type=int,default=3); p.add_argument('--train-groups',type=int,default=1000); p.add_argument('--eval-groups',type=int,default=100); p.add_argument('--max-length',type=int,default=2048); p.add_argument('--format',choices=['single','multi'],default='multi'); p.add_argument('--repeat-passage',action='store_true',help='include the passage in every user turn for multi-format training'); p.add_argument('--loss',choices=['assistant','full'],default='assistant'); p.add_argument('--epochs',type=int,default=2); p.add_argument('--output',default='runs/model'); p.add_argument('--adapter'); p.add_argument('--left'); p.add_argument('--right'); a=p.parse_args(); {'prepare':prepare,'train':train,'eval':evaluate,'compare':compare}[a.command](a)

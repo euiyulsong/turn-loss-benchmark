@@ -7,6 +7,10 @@ class Tests(unittest.TestCase):
     def test_pairs_and_masks(self):
         g={'context':'Ada was born in London.','qa':[{'q':'Who?','a':['Ada']},{'q':'Where?','a':['London']},{'q':'Birthplace?','a':['London']}]}
         ms=messages(g); self.assertEqual(sum(m['role']=='assistant' for m in ms),3)
+        repeated=messages(g,repeat_passage=True)
+        self.assertEqual(sum(m['role']=='assistant' for m in repeated),3)
+        self.assertEqual(sum('Passage:' in m['content'] for m in repeated if m['role']=='user'),3)
+        self.assertEqual(sum('Passage:' in m['content'] for m in ms if m['role']=='user'),1)
         x=encode(FakeTokenizer(),ms,'assistant'); self.assertEqual(sum(l!=-100 for l in x['labels']),9)
         for i,m in enumerate(ms): self.assertEqual(x['labels'][i*3:(i+1)*3],x['input_ids'][i*3:(i+1)*3] if m['role']=='assistant' else [-100]*3)
         self.assertNotIn('Previous conversation',single(g,1,'squad')[1]['content'])
